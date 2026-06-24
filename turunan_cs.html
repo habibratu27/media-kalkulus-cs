@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turunan & Ilmu Komputer - Media Interaktif</title>
+    <style>
+        /* CSS Variables untuk Tema */
+        :root {
+            --primary: #0f172a; /* Navy */
+            --primary-light: #1e293b;
+            --accent: #fbbf24; /* Yellow/Gold */
+            --accent-hover: #f59e0b;
+            --text-main: #f8fafc;
+            --text-dark: #334155;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+        }
+
+        /* Reset & Base */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-dark); line-height: 1.6; padding-top: 70px; }
+        h1, h2, h3, h4 { color: var(--primary); margin-bottom: 1rem; }
+        p { margin-bottom: 1rem; }
+        
+        /* Typography Accessibility */
+        body { font-size: 16px; }
+        @media (min-width: 768px) { body { font-size: 18px; } }
+
+        /* Navigation */
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background-color: var(--primary); color: var(--text-main);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 2rem; z-index: 1000; box-shadow: var(--shadow);
+        }
+        .nav-brand { font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .nav-brand .badge { background: var(--accent); color: var(--primary); padding: 2px 8px; border-radius: 20px; font-size: 0.8rem; }
+        .nav-links { display: flex; gap: 1rem; list-style: none; }
+        .nav-links li a {
+            color: var(--text-main); text-decoration: none; padding: 0.5rem 1rem;
+            border-radius: 20px; transition: 0.3s; cursor: pointer; font-weight: 500;
+        }
+        .nav-links li a:hover, .nav-links li a.active { background-color: var(--primary-light); color: var(--accent); }
+        .nav-controls { display: flex; gap: 10px; }
+        .nav-controls button {
+            background: none; border: none; color: var(--accent); font-size: 1.2rem; cursor: pointer; padding: 5px;
+        }
+        .hamburger { display: none; background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; }
+
+        /* Progress Bar */
+        #progress-container { width: 100%; height: 5px; background: var(--primary-light); position: fixed; top: 0; left: 0; z-index: 1001; }
+        #progress-bar { width: 0%; height: 100%; background: var(--accent); transition: width 0.3s ease; }
+
+        /* Main Container */
+        main { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* UI Components (Cards, Buttons) */
+        .card { background: var(--bg-card); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 2rem; }
+        .btn {
+            display: inline-block; background: var(--accent); color: var(--primary); font-weight: bold;
+            padding: 0.8rem 1.5rem; border: none; border-radius: var(--radius); cursor: pointer;
+            transition: all 0.3s; text-align: center; font-size: 1rem; min-height: 48px;
+        }
+        .btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: var(--white); }
+
+        /* Grid Layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+        /* Hero Section */
+        .hero { text-align: center; padding: 4rem 2rem; background: var(--primary); color: var(--text-main); border-radius: var(--radius); margin-bottom: 2rem; }
+        .hero h1 { color: var(--accent); font-size: 2.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9; }
+
+        /* Canvas Simulation */
+        .canvas-container { text-align: center; margin-top: 1rem; }
+        canvas { background: #fafafa; border: 1px solid #ccc; border-radius: 8px; max-width: 100%; height: auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .controls { margin-top: 1rem; background: var(--bg-body); padding: 1rem; border-radius: 8px; }
+        .controls input[type=range] { width: 100%; cursor: pointer; }
+
+        /* Submateri */
+        .submateri { display: none; }
+        .submateri.active { display: block; }
+        .submateri-nav { display: flex; justify-content: space-between; margin-top: 2rem; }
+
+        /* Accordion (Studi Kasus) */
+        .accordion-item { border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem; overflow: hidden; }
+        .accordion-header {
+            background: var(--bg-body); padding: 1rem; font-weight: bold; color: var(--primary);
+            cursor: pointer; display: flex; justify-content: space-between;
+        }
+        .accordion-content { padding: 0 1rem; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: var(--bg-card); }
+        .accordion-content p { padding: 1rem 0; }
+
+        /* Kuis */
+        .quiz-container { display: flex; flex-direction: column; gap: 1rem; }
+        .quiz-option {
+            background: var(--bg-body); padding: 1rem; border-radius: 8px; border: 2px solid transparent;
+            cursor: pointer; transition: 0.2s; font-weight: 500;
+        }
+        .quiz-option:hover { background: #e2e8f0; }
+        .quiz-option.selected { border-color: var(--primary); background: #e2e8f0; }
+        .quiz-option.correct { background: var(--success); color: white; border-color: var(--success); }
+        .quiz-option.wrong { background: var(--danger); color: white; border-color: var(--danger); }
+        .feedback { display: none; margin-top: 1rem; padding: 1rem; border-radius: 8px; font-weight: bold; }
+        .feedback.correct { background: #d1fae5; color: #065f46; display: block; }
+        .feedback.wrong { background: #fee2e2; color: #991b1b; display: block; }
+        .cert-card { text-align: center; padding: 3rem 1rem; border: 4px solid var(--accent); background: #fffcf0; }
+
+        /* Form Elements */
+        input[type="text"], textarea {
+            width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 1rem; font-family: inherit;
+        }
+
+        /* Footer */
+        footer { text-align: center; padding: 2rem; background: var(--primary); color: var(--text-main); margin-top: 2rem; }
+        footer p { margin-bottom: 0.5rem; opacity: 0.8; font-size: 0.9rem; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; flex-direction: column; position: absolute; top: 100%; left: 0;
+                width: 100%; background: var(--primary); padding: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+            .nav-links.show { display: flex; }
+            .hamburger { display: block; }
+            .grid-2 { grid-template-columns: 1fr; }
+            main { padding: 1rem; }
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-container"><div id="progress-bar"></div></div>
+
+    <nav aria-label="Main Navigation">
+        <div class="nav-brand">
+            <span>MatDas CS</span>
+            <span class="badge" id="user-badge">Pemula</span>
+        </div>
+        <button class="hamburger" id="btn-menu" aria-label="Toggle menu">☰</button>
+        <ul class="nav-links" id="nav-links">
+            <li><a onclick="app.nav('beranda')" class="active">Beranda</a></li>
+            <li><a onclick="app.nav('materi')">Materi</a></li>
+            <li><a onclick="app.nav('studikasus')">Studi Kasus</a></li>
+            <li><a onclick="app.nav('kuis')">Kuis</a></li>
+            <li><a onclick="app.nav('refleksi')">Refleksi</a></li>
+            <li><a onclick="app.nav('pengembang')">Pengembang</a></li>
+        </ul>
+        <div class="nav-controls">
+            <button onclick="audioEngine.toggleBGM()" id="btn-audio" title="Toggle BGM">🔇</button>
+            <button onclick="app.toggleFullscreen()" title="Fullscreen">⛶</button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="beranda" class="active">
+            <div class="hero">
+                <h1>Turunan & Algoritma</h1>
+                <p>"Di balik algoritma Gojek, algoritma FYP TikTok, dan Kecerdasan Buatan (AI), ada konsep Turunan yang bekerja keras mengatur efisiensi."</p>
+                <button class="btn" onclick="app.nav('materi')">Mulai Belajar Sekarang</button>
+            </div>
+            
+            <div class="card grid-2">
+                <div>
+                    <h3>Dashboard Belajar</h3>
+                    <p>Selamat datang, Mahasiswa Ilmu Komputer Gen Z! Di sini kita akan mempelajari Kalkulus bukan sekadar rumus, melainkan bagaimana matematika menjadi mesin di balik teknologi modern.</p>
+                    <p><strong>Pencapaian Kamu:</strong> <span id="dash-badge" style="color:var(--accent); font-weight:bold;">Pemula</span></p>
+                    <p><strong>Progress:</strong> <span id="dash-progress">0</span>%</p>
+                </div>
+                <div style="background: var(--bg-body); padding: 1.5rem; border-radius: var(--radius);">
+                    <h4>Roadmap Modul</h4>
+                    <ul style="list-style-position: inside;">
+                        <li>Materi Konsep & Visualisasi (Simulasi)</li>
+                        <li>Studi Kasus Dunia Nyata IT</li>
+                        <li>Kuis Evaluasi Diri</li>
+                        <li>Refleksi Metakognitif</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="materi">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Materi: Turunan Fungsi</h2>
+                    <button class="btn btn-outline" style="min-height: 36px; padding: 0.3rem 1rem;" onclick="audioEngine.readText('Materi turunan. Turunan mengukur seberapa cepat nilai suatu fungsi berubah. Mari eksplorasi simulasi grafik di bawah.')">🔊 Dengarkan</button>
+                </div>
+
+                <div id="sub-1" class="submateri active">
+                    <h3>1. Konsep Dasar & Interpretasi Geometris</h3>
+                    <p>Secara sederhana, turunan adalah <strong>Laju Perubahan Sesaat</strong>. Bayangkan <em>speedometer</em> pada motor; angka yang ditunjukkan pada detik tertentu adalah "turunan" dari posisi terhadap waktu.</p>
+                    <p>Secara geometris, turunan merepresentasikan <strong>Gradien (kemiringan) Garis Singgung</strong> pada suatu kurva. Mari kita simulasikan!</p>
+                    
+                    <div class="canvas-container">
+                        <h4>Simulasi Interaktif: f(x) = x²</h4>
+                        <p>Geser slider untuk melihat bagaimana garis singgung dan nilai turunan (gradien m) berubah.</p>
+                        <canvas id="graphCanvas" width="600" height="300">Browser Anda tidak mendukung Canvas.</canvas>
+                        <div class="controls">
+                            <label for="x-slider">Nilai x: <span id="x-val-display">0</span></label><br>
+                            <input type="range" id="x-slider" min="-4" max="4" step="0.1" value="0">
+                            <p style="margin-top: 10px; font-weight: bold; color: var(--primary);">
+                                Turunan f'(x) / Gradien (m) = <span id="m-val-display">0.00</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sub-2" class="submateri">
+                    <h3>2. Aturan Dasar Turunan</h3>
+                    <p>Dalam memprogram kalkulator analitik atau AI, kita tidak menghitung limit manual, tapi menggunakan aturan paten (Power Rule & Sum Rule):</p>
+                    <div style="background: var(--bg-body); padding: 1.5rem; border-left: 4px solid var(--accent); margin-bottom: 1rem;">
+                        <strong>Power Rule (Aturan Pangkat):</strong><br>
+                        Jika f(x) = x<sup>n</sup>, maka f'(x) = n · x<sup>n-1</sup>
+                    </div>
+                    <div style="background: var(--bg-body); padding: 1.5rem; border-left: 4px solid var(--accent);">
+                        <strong>Sum Rule (Aturan Penjumlahan):</strong><br>
+                        Jika h(x) = f(x) + g(x), maka h'(x) = f'(x) + g'(x)
+                    </div>
+                </div>
+
+                <div id="sub-3" class="submateri">
+                    <h3>3. Aplikasi di Ilmu Komputer</h3>
+                    <div class="grid-2">
+                        <div style="padding: 1rem; background: var(--bg-body); border-radius: 8px;">
+                            <h4 style="color: var(--primary-light)">🤖 Machine Learning (AI)</h4>
+                            <p>Algoritma <em>Gradient Descent</em> menggunakan turunan untuk mencari nilai error (kerugian) paling kecil agar AI semakin pintar menebak data.</p>
+                        </div>
+                        <div style="padding: 1rem; background: var(--bg-body); border-radius: 8px;">
+                            <h4 style="color: var(--primary-light)">🎮 Game Physics</h4>
+                            <p>Mesin game (seperti Unity) menghitung fisika karakter melompat (kecepatan & percepatan) dengan menurunkan fungsi posisinya.</p>
+                        </div>
+                        <div style="padding: 1rem; background: var(--bg-body); border-radius: 8px; grid-column: span 1;">
+                            <h4 style="color: var(--primary-light)">⚡ Optimasi Algoritma</h4>
+                            <p>Menentukan titik minimum dari fungsi biaya (Cost Function) server untuk menghemat resource memori dan CPU.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="submateri-nav">
+                    <button class="btn btn-outline" id="btn-prev" onclick="app.changeSub(-1)" disabled>← Sebelumnya</button>
+                    <span style="align-self: center;">Halaman <span id="sub-page">1</span>/3</span>
+                    <button class="btn" id="btn-next" onclick="app.changeSub(1)">Selanjutnya →</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="studikasus">
+            <div class="card">
+                <h2>Studi Kasus Ilmu Komputer</h2>
+                <p>Klik pada setiap kasus untuk melihat bagaimana turunan menyelesaikan masalah di dunia IT.</p>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="app.toggleAccordion(this)">
+                        <span>Kasus 1: Optimasi Biaya Server (Startup)</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>Masalah:</strong> Sebuah startup Cloud Hosting memiliki fungsi biaya operasional per jam: <code>C(x) = 2x² - 40x + 500</code> (dalam ribuan rupiah), di mana <code>x</code> adalah jumlah server aktif. Berapa server yang harus aktif agar biaya minimum?</p>
+                        <p><strong>Penyelesaian:</strong> Cari turunan pertama dan jadikan sama dengan nol (Titik Kritis).</p>
+                        <ul>
+                            <li>C'(x) = 4x - 40</li>
+                            <li>Syarat minimum: C'(x) = 0</li>
+                            <li>4x - 40 = 0 → 4x = 40 → <strong>x = 10</strong></li>
+                        </ul>
+                        <p><em>Kesimpulan:</em> Startup harus menyalakan tepat 10 server untuk mencapai biaya operasional paling efisien.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="app.toggleAccordion(this)">
+                        <span>Kasus 2: Pergerakan Karakter (Game Dev)</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>Masalah:</strong> Posisi karakter NPC dalam game 2D dirumuskan <code>s(t) = t³ - 6t² + 9t</code>. Kapan karakter tersebut berhenti (kecepatan = 0)?</p>
+                        <p><strong>Penyelesaian:</strong> Kecepatan <code>v(t)</code> adalah turunan pertama dari posisi.</p>
+                        <ul>
+                            <li>v(t) = s'(t) = 3t² - 12t + 9</li>
+                            <li>Karakter berhenti saat v(t) = 0</li>
+                            <li>3(t² - 4t + 3) = 0 → 3(t - 1)(t - 3) = 0</li>
+                            <li><strong>t = 1</strong> atau <strong>t = 3</strong> detik.</li>
+                        </ul>
+                        <p><em>Kesimpulan:</em> Kode game akan menghentikan animasi jalan NPC pada detik ke-1 dan ke-3.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="app.toggleAccordion(this)">
+                        <span>Kasus 3: Memperkecil Error (AI / Machine Learning)</span>
+                        <span>+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p><strong>Masalah:</strong> Jaringan saraf tiruan memiliki fungsi error sederhana <code>E(w) = w² - 4w + 10</code>. Kita menggunakan algoritma <em>Gradient Descent</em>. Berapa arah gradien saat bobot <code>w = 5</code>?</p>
+                        <p><strong>Penyelesaian:</strong> Hitung turunan fungsi Error terhadap w.</p>
+                        <ul>
+                            <li>dE/dw = 2w - 4</li>
+                            <li>Substitusi w = 5: dE/dw = 2(5) - 4 = <strong>6</strong></li>
+                        </ul>
+                        <p><em>Kesimpulan:</em> Gradien positif (6), artinya komputer harus mengurangi nilai <code>w</code> (melangkah ke arah berlawanan) untuk memperkecil Error.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="kuis">
+            <div class="card" id="quiz-setup">
+                <h2>Kuis Kontekstual IT</h2>
+                <p>Uji pemahamanmu dengan 10 soal pilihan ganda. Masukkan data diri untuk mulai.</p>
+                <input type="text" id="q-nama" placeholder="Nama Lengkap" required>
+                <input type="text" id="q-nim" placeholder="NIM / Kelas" required>
+                <button class="btn" onclick="quizApp.startQuiz()">Mulai Kuis</button>
+            </div>
+
+            <div class="card" id="quiz-active" style="display: none;">
+                <div style="display:flex; justify-content: space-between; margin-bottom: 1rem;">
+                    <span id="q-progress" style="font-weight: bold; color: var(--primary);">Soal 1 dari 10</span>
+                    <span id="q-score" style="font-weight: bold; color: var(--accent);">Skor: 0</span>
+                </div>
+                <h3 id="q-text" style="font-size: 1.1rem; margin-bottom: 1.5rem;">Pertanyaan?</h3>
+                <div class="quiz-container" id="q-options">
+                    </div>
+                <div id="q-feedback" class="feedback"></div>
+                <button class="btn" id="btn-next-q" style="margin-top: 1rem; display: none;" onclick="quizApp.nextQuestion()">Lanjut Soal</button>
+            </div>
+
+            <div class="card cert-card" id="quiz-result" style="display: none;">
+                <h2 style="color: var(--accent);">🏆 Hasil Kuis 🏆</h2>
+                <h3 id="res-nama" style="color: var(--primary);">Nama</h3>
+                <p id="res-nim">NIM</p>
+                <hr style="margin: 1rem 0; border: 1px solid #eee;">
+                <h1 style="font-size: 3rem; color: var(--primary);" id="res-nilai">100</h1>
+                <p>Benar: <span id="res-benar">10</span> | Salah: <span id="res-salah">0</span></p>
+                <p id="res-msg" style="font-weight: bold; margin-top: 1rem; font-size: 1.2rem;">Selamat! Kamu siap menjadi Data Scientist!</p>
+                <button class="btn" style="margin-top: 2rem;" onclick="quizApp.reset()">Ulangi Latihan</button>
+            </div>
+        </section>
+
+        <section id="refleksi">
+            <div class="card">
+                <h2>Refleksi Metakognisi (3-2-1)</h2>
+                <p>Bantu otakmu memproses memori jangka panjang dengan mengisi jurnal refleksi ini.</p>
+                
+                <label style="font-weight:bold; color:var(--primary);">3 hal baru yang saya pelajari:</label>
+                <textarea id="ref-3" rows="3" placeholder="1. ...&#10;2. ...&#10;3. ..."></textarea>
+
+                <label style="font-weight:bold; color:var(--primary);">2 aplikasi turunan di CS yang paling menarik:</label>
+                <textarea id="ref-2" rows="2" placeholder="1. ...&#10;2. ..."></textarea>
+
+                <label style="font-weight:bold; color:var(--primary);">1 konsep yang masih membingungkan:</label>
+                <input type="text" id="ref-1" placeholder="Saya masih bingung tentang...">
+
+                <button class="btn" onclick="app.saveReflection()">Kirim Refleksi</button>
+                <p id="ref-msg" style="color: var(--success); font-weight: bold; margin-top: 10px; display: none;">✓ Terima kasih! Refleksimu telah tersimpan di browser.</p>
+            </div>
+        </section>
+
+        <section id="pengembang">
+            <div class="card" style="text-align: center;">
+                <h2>Profil Pengembang</h2>
+                <div style="width: 100px; height: 100px; background: var(--primary-light); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto 1.5rem auto;">👨‍🏫</div>
+                <h3 style="margin-bottom: 0.5rem;">Habib Ratu Perwira Negara, M.Pd</h3>
+                <p style="font-weight: 500;">Dosen Pendidikan Matematika pada Prodi Ilmu Komputer<br>Universitas Bumigora</p>
+                <hr style="margin: 1.5rem auto; width: 50%; border: 1px solid #eee;">
+                <p style="font-weight: bold; color: var(--accent); background: var(--primary); display: inline-block; padding: 0.5rem 1rem; border-radius: 20px;">
+                    MEDIA PEMBELAJARAN MATEMATIKA & TEKNOLOGI
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Media Pembelajaran SPA Interaktif.</p>
+        <p>Dirancang untuk Mahasiswa Semester 1 Ilmu Komputer Gen-Z.</p>
+    </footer>
+
+    <script>
+        // 1. Audio Engine (Web Audio API Synthesizer - No external files needed)
+        const audioEngine = {
+            ctx: null,
+            bgmOsc: null,
+            bgmGain: null,
+            isBgmPlaying: false,
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+            },
+            playTone(freq, type, duration, vol=0.1) {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            },
+            click() { this.init(); this.playTone(600, 'sine', 0.1, 0.05); },
+            correct() { this.init(); this.playTone(800, 'sine', 0.1, 0.1); setTimeout(() => this.playTone(1200, 'sine', 0.3, 0.1), 100); },
+            wrong() { this.init(); this.playTone(300, 'sawtooth', 0.3, 0.1); },
+            toggleBGM() {
+                this.init();
+                const btn = document.getElementById('btn-audio');
+                if (this.isBgmPlaying) {
+                    this.bgmGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
+                    setTimeout(() => { this.bgmOsc.stop(); this.bgmOsc.disconnect(); }, 500);
+                    this.isBgmPlaying = false;
+                    btn.innerText = '🔇';
+                } else {
+                    this.bgmOsc = this.ctx.createOscillator();
+                    this.bgmGain = this.ctx.createGain();
+                    this.bgmOsc.type = 'triangle';
+                    // Mainkan nada drone ambient rendah
+                    this.bgmOsc.frequency.setValueAtTime(100, this.ctx.currentTime);
+                    this.bgmGain.gain.setValueAtTime(0.02, this.ctx.currentTime);
+                    this.bgmOsc.connect(this.bgmGain);
+                    this.bgmGain.connect(this.ctx.destination);
+                    this.bgmOsc.start();
+                    this.isBgmPlaying = true;
+                    btn.innerText = '🔊';
+                }
+            },
+            readText(text) {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'id-ID';
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    alert("Browser tidak mendukung Text-to-Speech.");
+                }
+            }
+        };
+
+        // 2. Main Application Logic & Routing
+        const app = {
+            currentSub: 1,
+            maxSub: 3,
+            progressData: { visited: new Set(['beranda']), quizDone: false, refDone: false },
+            
+            init() {
+                // Mobile Menu
+                document.getElementById('btn-menu').addEventListener('click', () => {
+                    document.getElementById('nav-links').classList.toggle('show');
+                });
+                
+                // Add click sound to all buttons
+                document.querySelectorAll('button, a').forEach(el => {
+                    el.addEventListener('click', () => {
+                        if(el.id !== 'btn-audio') audioEngine.click();
+                    });
+                });
+
+                // Load Progress
+                this.loadProgress();
+                this.updateProgressBar();
+                canvasApp.init();
+            },
+
+            nav(sectionId) {
+                // Hide all
+                document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+                document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+                
+                // Show target
+                document.getElementById(sectionId).classList.add('active');
+                document.querySelector(`.nav-links a[onclick="app.nav('${sectionId}')"]`).classList.add('active');
+                
+                // Hide mobile menu if open
+                document.getElementById('nav-links').classList.remove('show');
+
+                // Track Progress
+                this.progressData.visited.add(sectionId);
+                this.saveProgress();
+                this.updateProgressBar();
+
+                // Scroll to top
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            },
+
+            changeSub(dir) {
+                document.getElementById(`sub-${this.currentSub}`).classList.remove('active');
+                this.currentSub += dir;
+                document.getElementById(`sub-${this.currentSub}`).classList.add('active');
+                
+                document.getElementById('btn-prev').disabled = (this.currentSub === 1);
+                document.getElementById('btn-next').disabled = (this.currentSub === this.maxSub);
+                document.getElementById('sub-page').innerText = this.currentSub;
+            },
+
+            toggleAccordion(el) {
+                const content = el.nextElementSibling;
+                const sign = el.querySelector('span:last-child');
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    sign.innerText = '+';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    sign.innerText = '-';
+                }
+            },
+
+            toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            },
+
+            saveReflection() {
+                const t1 = document.getElementById('ref-3').value;
+                const t2 = document.getElementById('ref-2').value;
+                const t3 = document.getElementById('ref-1').value;
+                if(t1 && t2 && t3) {
+                    localStorage.setItem('refleksi_cs', JSON.stringify({t1, t2, t3}));
+                    document.getElementById('ref-msg').style.display = 'block';
+                    this.progressData.refDone = true;
+                    this.saveProgress();
+                    this.updateProgressBar();
+                } else {
+                    alert("Mohon isi semua form refleksi!");
+                }
+            },
+
+            updateProgressBar() {
+                const totalSteps = 6; // 6 menu navigasi utuh
+                let completed = this.progressData.visited.size;
+                if(this.progressData.quizDone) completed += 1;
+                if(this.progressData.refDone) completed += 1;
+                
+                let percent = Math.min(Math.round((completed / (totalSteps+2)) * 100), 100);
+                document.getElementById('progress-bar').style.width = percent + '%';
+                document.getElementById('dash-progress').innerText = percent;
+
+                // Update Badge
+                let badge = "Pemula";
+                if(percent > 50) badge = "Analis Data";
+                if(percent >= 90) badge = "AI Engineer";
+                document.getElementById('user-badge').innerText = badge;
+                document.getElementById('dash-badge').innerText = badge;
+            },
+
+            saveProgress() {
+                try {
+                    const dataToSave = {
+                        visited: Array.from(this.progressData.visited),
+                        quizDone: this.progressData.quizDone,
+                        refDone: this.progressData.refDone
+                    };
+                    localStorage.setItem('progress_matdas', JSON.stringify(dataToSave));
+                } catch(e) { console.log("LocalStorage not available."); }
+            },
+
+            loadProgress() {
+                try {
+                    const saved = JSON.parse(localStorage.getItem('progress_matdas'));
+                    if (saved) {
+                        this.progressData.visited = new Set(saved.visited);
+                        this.progressData.quizDone = saved.quizDone;
+                        this.progressData.refDone = saved.refDone;
+                        
+                        // Load refleksi if exists
+                        const ref = JSON.parse(localStorage.getItem('refleksi_cs'));
+                        if(ref) {
+                            document.getElementById('ref-3').value = ref.t1;
+                            document.getElementById('ref-2').value = ref.t2;
+                            document.getElementById('ref-1').value = ref.t3;
+                        }
+                    }
+                } catch(e) {}
+            }
+        };
+
+        // 3. Canvas Graph Simulation (GeoGebra Style)
+        const canvasApp = {
+            canvas: null, ctx: null, width: 0, height: 0,
+            scaleX: 40, scaleY: 10, offsetX: 0, offsetY: 0,
+            
+            init() {
+                this.canvas = document.getElementById('graphCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.resize();
+                this.offsetX = this.width / 2;
+                this.offsetY = this.height - 30; // Posisi titik asal Y agag ke bawah
+
+                const slider = document.getElementById('x-slider');
+                slider.addEventListener('input', (e) => {
+                    this.draw(parseFloat(e.target.value));
+                    document.getElementById('x-val-display').innerText = e.target.value;
+                });
+                
+                window.addEventListener('resize', () => { this.resize(); this.draw(parseFloat(slider.value)); });
+                this.draw(0);
+            },
+
+            resize() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth - 20;
+                this.width = this.canvas.width;
+                this.height = this.canvas.height;
+                this.offsetX = this.width / 2;
+                this.scaleX = this.width / 15; // responsif scale
+            },
+
+            // Fungsi y = x^2
+            f(x) { return x * x; },
+            // Turunan y' = 2x
+            df(x) { return 2 * x; },
+
+            mathToPixel(x, y) {
+                return {
+                    px: this.offsetX + (x * this.scaleX),
+                    py: this.offsetY - (y * this.scaleY)
+                };
+            },
+
+            draw(currentX) {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+                this.drawAxes();
+                this.drawCurve();
+                this.drawTangent(currentX);
+            },
+
+            drawAxes() {
+                this.ctx.strokeStyle = '#ccc';
+                this.ctx.lineWidth = 1;
+                this.ctx.beginPath();
+                // Sumbu X
+                this.ctx.moveTo(0, this.offsetY); this.ctx.lineTo(this.width, this.offsetY);
+                // Sumbu Y
+                this.ctx.moveTo(this.offsetX, 0); this.ctx.lineTo(this.offsetX, this.height);
+                this.ctx.stroke();
+            },
+
+            drawCurve() {
+                this.ctx.strokeStyle = 'var(--primary)';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                for(let px = 0; px <= this.width; px++) {
+                    let mx = (px - this.offsetX) / this.scaleX;
+                    let my = this.f(mx);
+                    let pt = this.mathToPixel(mx, my);
+                    if (px === 0) this.ctx.moveTo(pt.px, pt.py);
+                    else this.ctx.lineTo(pt.px, pt.py);
+                }
+                this.ctx.stroke();
+            },
+
+            drawTangent(x) {
+                let y = this.f(x);
+                let m = this.df(x);
+                
+                // Update UI Text
+                document.getElementById('m-val-display').innerText = m.toFixed(2);
+
+                let pt = this.mathToPixel(x, y);
+
+                // Gambar titik potong
+                this.ctx.fillStyle = 'var(--danger)';
+                this.ctx.beginPath();
+                this.ctx.arc(pt.px, pt.py, 5, 0, Math.PI*2);
+                this.ctx.fill();
+
+                // Persamaan garis singgung: Y - y = m(X - x) => Y = m(X - x) + y
+                this.ctx.strokeStyle = 'var(--accent-hover)';
+                this.ctx.lineWidth = 2;
+                this.ctx.setLineDash([5, 5]);
+                this.ctx.beginPath();
+                
+                // Gambar rentang garis dari x-3 ke x+3
+                let x1 = x - 3; let y1 = m * (x1 - x) + y;
+                let x2 = x + 3; let y2 = m * (x2 - x) + y;
+                
+                let p1 = this.mathToPixel(x1, y1);
+                let p2 = this.mathToPixel(x2, y2);
+                
+                this.ctx.moveTo(p1.px, p1.py);
+                this.ctx.lineTo(p2.px, p2.py);
+                this.ctx.stroke();
+                this.ctx.setLineDash([]); // Reset
+            }
+        };
+
+        // 4. Quiz Engine
+        const quizApp = {
+            questions: [
+                { q: "Apa yang direpresentasikan oleh turunan dalam konteks fisika game (misal karakter berlari)?", o: ["Posisi awal", "Kecepatan (Laju perubahan posisi)", "Warna karakter", "Resolusi layar"], a: 1, exp: "Turunan pertama dari posisi terhadap waktu adalah kecepatan." },
+                { q: "Jika fungsi biaya server adalah C(x) = x² - 10x + 50. Berapa nilai x agar biaya minimum?", o: ["5", "10", "0", "25"], a: 0, exp: "C'(x) = 2x - 10. Syarat minimum C'(x)=0. Maka 2x - 10 = 0 -> x = 5." },
+                { q: "Dalam algoritma AI 'Gradient Descent', kita menggunakan turunan untuk mencari...", o: ["Nilai maksimum dari fungsi", "Nilai minimum dari fungsi error", "Kecepatan internet", "Kapasitas RAM"], a: 1, exp: "Gradient Descent bergerak berlawanan arah gradien (turunan) untuk mencari error terendah." },
+                { q: "Berapa turunan pertama dari fungsi f(x) = 3x²?", o: ["3x", "6x", "6", "x³"], a: 1, exp: "Gunakan power rule: 2 * 3x^(2-1) = 6x." },
+                { q: "Jika posisi musuh di game adalah konstan s(t) = 100. Berapa kecepatannya?", o: ["100", "10", "0", "Tak hingga"], a: 2, exp: "Turunan dari konstanta adalah 0. Posisi tidak berubah = tidak ada kecepatan." },
+                { q: "Konsep turunan merupakan inti dari cabang matematika yang disebut...", o: ["Aljabar Boolean", "Geometri Diskrit", "Kalkulus Diferensial", "Statistika"], a: 2, exp: "Kalkulus diferensial berfokus pada limit, turunan, dan aplikasinya." },
+                { q: "Gradien dari garis singgung pada kurva f(x) = x² pada x = 2 adalah...", o: ["2", "4", "8", "0"], a: 1, exp: "f'(x) = 2x. Untuk x = 2, f'(2) = 2(2) = 4." },
+                { q: "Jika kamu membuat algoritma prediksi cuaca dan ingin mengukur 'seberapa cepat suhu berubah per jam', kamu menggunakan...", o: ["Integral", "Matriks", "Turunan", "Himpunan"], a: 2, exp: "Turunan selalu berkaitan dengan 'Laju Perubahan' (Rate of Change)." },
+                { q: "Aturan apa yang digunakan untuk menurunkan fungsi f(x) = x³ + 2x?", o: ["Chain Rule", "Product Rule", "Sum Rule (Penjumlahan)", "Quotient Rule"], a: 2, exp: "Karena ada tanda '+', kita menurunkan tiap suku secara terpisah (Sum Rule)." },
+                { q: "Percepatan (acceleration) dalam game engine didapat dengan cara menurunkan fungsi posisi sebanyak...", o: ["1 kali", "2 kali", "3 kali", "Tidak perlu diturunkan"], a: 1, exp: "Turunan ke-1 = kecepatan. Turunan ke-2 = percepatan." }
+            ],
+            currIndex: 0, score: 0, answered: false, user: { nama: '', nim: '' },
+
+            startQuiz() {
+                const nama = document.getElementById('q-nama').value;
+                const nim = document.getElementById('q-nim').value;
+                if(!nama || !nim) { alert("Harap isi Nama dan NIM/Kelas."); return; }
+                
+                this.user = { nama, nim };
+                document.getElementById('quiz-setup').style.display = 'none';
+                document.getElementById('quiz-active').style.display = 'block';
+                this.currIndex = 0; this.score = 0;
+                this.showQuestion();
+            },
+
+            showQuestion() {
+                this.answered = false;
+                const q = this.questions[this.currIndex];
+                document.getElementById('q-progress').innerText = `Soal ${this.currIndex + 1} dari 10`;
+                document.getElementById('q-text').innerText = q.q;
+                
+                const optContainer = document.getElementById('q-options');
+                optContainer.innerHTML = '';
+                document.getElementById('q-feedback').style.display = 'none';
+                document.getElementById('btn-next-q').style.display = 'none';
+
+                q.o.forEach((optText, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'quiz-option';
+                    div.innerText = optText;
+                    div.onclick = () => this.checkAnswer(index, div);
+                    optContainer.appendChild(div);
+                });
+            },
+
+            checkAnswer(selectedIndex, optElement) {
+                if(this.answered) return;
+                this.answered = true;
+                const q = this.questions[this.currIndex];
+                const feedback = document.getElementById('q-feedback');
+                const options = document.querySelectorAll('.quiz-option');
+
+                if(selectedIndex === q.a) {
+                    audioEngine.correct();
+                    optElement.classList.add('correct');
+                    this.score += 10;
+                    document.getElementById('q-score').innerText = `Skor: ${this.score}`;
+                    feedback.className = 'feedback correct';
+                    feedback.innerText = `Jawaban Benar! 🎉\nPenjelasan: ${q.exp}`;
+                } else {
+                    audioEngine.wrong();
+                    optElement.classList.add('wrong');
+                    options[q.a].classList.add('correct'); // Tunjukkan yang benar
+                    feedback.className = 'feedback wrong';
+                    feedback.innerText = `Jawaban Salah.\nPenjelasan: ${q.exp}`;
+                }
+                
+                feedback.style.display = 'block';
+                document.getElementById('btn-next-q').style.display = 'block';
+                
+                // Ubah teks tombol jika soal terakhir
+                if(this.currIndex === 9) document.getElementById('btn-next-q').innerText = "Lihat Hasil";
+                else document.getElementById('btn-next-q').innerText = "Lanjut Soal";
+            },
+
+            nextQuestion() {
+                this.currIndex++;
+                if(this.currIndex < 10) {
+                    this.showQuestion();
+                } else {
+                    this.showResult();
+                }
+            },
+
+            showResult() {
+                document.getElementById('quiz-active').style.display = 'none';
+                document.getElementById('quiz-result').style.display = 'block';
+                
+                document.getElementById('res-nama').innerText = this.user.nama;
+                document.getElementById('res-nim').innerText = this.user.nim;
+                document.getElementById('res-nilai').innerText = this.score;
+                document.getElementById('res-benar').innerText = this.score / 10;
+                document.getElementById('ryes-salah').innerText = 10 - (this.score / 10);
+                
+                let msg = "Ayo belajar lagi! Pahami materinya secara mendalam.";
+                if(this.score >= 80) msg = "Luar Biasa! Kamu siap menjadi Data Scientist atau Game Engineer! 🚀";
+                else if(this.score >= 60) msg = "Bagus! Terus asah kemampuan logikamu. 👍";
+                document.getElementById('res-msg').innerText = msg;
+
+                app.progressData.quizDone = true;
+                app.saveProgress();
+                app.updateProgressBar();
+            },
+
+            reset() {
+                document.getElementById('quiz-result').style.display = 'none';
+                document.getElementById('quiz-setup').style.display = 'block';
+            }
+        };
+
+        // Initialize App on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+
+    </script>
+</body>
+</html>
